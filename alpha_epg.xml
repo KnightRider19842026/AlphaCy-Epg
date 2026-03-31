@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" ?>
 <tv>
   <channel id="alpha.cy">
     <display-name>Alpha Cyprus</display-name>
   </channel>
   <programme channel="alpha.cy" start="20260401060000 +0300" stop="20260401064500 +0300">
-    <title>DEAL</title>
+    <title>DEAL (E)</title>
   </programme>
   <programme channel="alpha.cy" start="20260401064500 +0300" stop="20260401092000 +0300">
     <title>ALPHA ΚΑΛΗΜΕΡΑ</title>
@@ -16,16 +17,13 @@
     <title>ALPHA ΕΝΗΜΕΡΩΣΗ</title>
   </programme>
   <programme channel="alpha.cy" start="20260401135000 +0300" stop="20260401151500 +0300">
-    <title>ΤΟ ΣΟΪ ΣΟΥ</title>
+    <title>ΤΟ ΣΟΪ ΣΟΥ (E)</title>
   </programme>
   <programme channel="alpha.cy" start="20260401151500 +0300" stop="20260401170000 +0300">
     <title>ΜΕ ΑΓΑΠΗ ΧΡΙΣΤΙΑΝΑ</title>
   </programme>
-  <programme channel="alpha.cy" start="20260401170000 +0300" stop="20260401175500 +0300">
+  <programme channel="alpha.cy" start="20260401170000 +0300" stop="20260401180000 +0300">
     <title>THE CHASE GREECE</title>
-  </programme>
-  <programme channel="alpha.cy" start="20260401175500 +0300" stop="20260401180000 +0300">
-    <title>ALPHA NEWS</title>
   </programme>
   <programme channel="alpha.cy" start="20260401180000 +0300" stop="20260401190000 +0300">
     <title>ΝΑ Μ' ΑΓΑΠΑΣ</title>
@@ -42,11 +40,11 @@
   <programme channel="alpha.cy" start="20260401222000 +0300" stop="20260401230000 +0300">
     <title>Η ΓΗ ΤΗΣ ΕΛΙΑΣ</title>
   </programme>
-  <programme channel="alpha.cy" start="20260401230000 +0300" stop="20260402000000 +0300">
+  <programme channel="alpha.cy" start="20260401230000 +0300" stop="20260402010000 +0300">
     <title>ΝΑ Μ' ΑΓΑΠΑΣ (Ε)</title>
   </programme>
   <programme channel="alpha.cy" start="20260402060000 +0300" stop="20260402064500 +0300">
-    <title>DEAL</title>
+    <title>DEAL (E)</title>
   </programme>
   <programme channel="alpha.cy" start="20260402064500 +0300" stop="20260402092000 +0300">
     <title>ALPHA ΚΑΛΗΜΕΡΑ</title>
@@ -58,16 +56,13 @@
     <title>ALPHA ΕΝΗΜΕΡΩΣΗ</title>
   </programme>
   <programme channel="alpha.cy" start="20260402135000 +0300" stop="20260402151500 +0300">
-    <title>ΤΟ ΣΟΪ ΣΟΥ</title>
+    <title>ΤΟ ΣΟΪ ΣΟΥ (E)</title>
   </programme>
   <programme channel="alpha.cy" start="20260402151500 +0300" stop="20260402170000 +0300">
     <title>ΜΕ ΑΓΑΠΗ ΧΡΙΣΤΙΑΝΑ</title>
   </programme>
-  <programme channel="alpha.cy" start="20260402170000 +0300" stop="20260402175500 +0300">
+  <programme channel="alpha.cy" start="20260402170000 +0300" stop="20260402180000 +0300">
     <title>THE CHASE GREECE</title>
-  </programme>
-  <programme channel="alpha.cy" start="20260402175500 +0300" stop="20260402180000 +0300">
-    <title>ALPHA NEWS</title>
   </programme>
   <programme channel="alpha.cy" start="20260402180000 +0300" stop="20260402190000 +0300">
     <title>ΝΑ Μ' ΑΓΑΠΑΣ</title>
@@ -84,11 +79,11 @@
   <programme channel="alpha.cy" start="20260402222000 +0300" stop="20260402230000 +0300">
     <title>Η ΓΗ ΤΗΣ ΕΛΙΑΣ</title>
   </programme>
-  <programme channel="alpha.cy" start="20260402230000 +0300" stop="20260403000000 +0300">
+  <programme channel="alpha.cy" start="20260402230000 +0300" stop="20260403010000 +0300">
     <title>ΝΑ Μ' ΑΓΑΠΑΣ (Ε)</title>
   </programme>
   <programme channel="alpha.cy" start="20260403060000 +0300" stop="20260403064500 +0300">
-    <title>DEAL</title>
+    <title>DEAL (E)</title>
   </programme>
   <programme channel="alpha.cy" start="20260403064500 +0300" stop="20260403092000 +0300">
     <title>ALPHA ΚΑΛΗΜΕΡΑ</title>
@@ -100,16 +95,13 @@
     <title>ALPHA ΕΝΗΜΕΡΩΣΗ</title>
   </programme>
   <programme channel="alpha.cy" start="20260403135000 +0300" stop="20260403151500 +0300">
-    <title>ΤΟ ΣΟΪ ΣΟΥ</title>
+    <title>ΤΟ ΣΟΪ ΣΟΥ (E)</title>
   </programme>
   <programme channel="alpha.cy" start="20260403151500 +0300" stop="20260403170000 +0300">
     <title>ΜΕ ΑΓΑΠΗ ΧΡΙΣΤΙΑΝΑ</title>
   </programme>
-  <programme channel="alpha.cy" start="20260403170000 +0300" stop="20260403175500 +0300">
+  <programme channel="alpha.cy" start="20260403170000 +0300" stop="20260403180000 +0300">
     <title>THE CHASE GREECE</title>
-  </programme>
-  <programme channel="alpha.cy" start="20260403175500 +0300" stop="20260403180000 +0300">
-    <title>ALPHA NEWS</title>
   </programme>
   <programme channel="alpha.cy" start="20260403180000 +0300" stop="20260403190000 +0300">
     <title>ΝΑ Μ' ΑΓΑΠΑΣ</title>
@@ -126,11 +118,11 @@
   <programme channel="alpha.cy" start="20260403222000 +0300" stop="20260403230000 +0300">
     <title>Η ΓΗ ΤΗΣ ΕΛΙΑΣ</title>
   </programme>
-  <programme channel="alpha.cy" start="20260403230000 +0300" stop="20260404000000 +0300">
+  <programme channel="alpha.cy" start="20260403230000 +0300" stop="20260404010000 +0300">
     <title>ΝΑ Μ' ΑΓΑΠΑΣ (Ε)</title>
   </programme>
   <programme channel="alpha.cy" start="20260404060000 +0300" stop="20260404064500 +0300">
-    <title>DEAL</title>
+    <title>DEAL (E)</title>
   </programme>
   <programme channel="alpha.cy" start="20260404064500 +0300" stop="20260404092000 +0300">
     <title>ALPHA ΚΑΛΗΜΕΡΑ</title>
@@ -142,16 +134,13 @@
     <title>ALPHA ΕΝΗΜΕΡΩΣΗ</title>
   </programme>
   <programme channel="alpha.cy" start="20260404135000 +0300" stop="20260404151500 +0300">
-    <title>ΤΟ ΣΟΪ ΣΟΥ</title>
+    <title>ΤΟ ΣΟΪ ΣΟΥ (E)</title>
   </programme>
   <programme channel="alpha.cy" start="20260404151500 +0300" stop="20260404170000 +0300">
     <title>ΜΕ ΑΓΑΠΗ ΧΡΙΣΤΙΑΝΑ</title>
   </programme>
-  <programme channel="alpha.cy" start="20260404170000 +0300" stop="20260404175500 +0300">
+  <programme channel="alpha.cy" start="20260404170000 +0300" stop="20260404180000 +0300">
     <title>THE CHASE GREECE</title>
-  </programme>
-  <programme channel="alpha.cy" start="20260404175500 +0300" stop="20260404180000 +0300">
-    <title>ALPHA NEWS</title>
   </programme>
   <programme channel="alpha.cy" start="20260404180000 +0300" stop="20260404190000 +0300">
     <title>ΝΑ Μ' ΑΓΑΠΑΣ</title>
@@ -168,7 +157,7 @@
   <programme channel="alpha.cy" start="20260404222000 +0300" stop="20260404230000 +0300">
     <title>Η ΓΗ ΤΗΣ ΕΛΙΑΣ</title>
   </programme>
-  <programme channel="alpha.cy" start="20260404230000 +0300" stop="20260405000000 +0300">
+  <programme channel="alpha.cy" start="20260404230000 +0300" stop="20260405010000 +0300">
     <title>ΝΑ Μ' ΑΓΑΠΑΣ (Ε)</title>
   </programme>
 </tv>
