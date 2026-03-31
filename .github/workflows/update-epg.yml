@@ -2,8 +2,8 @@ name: Update Alpha Cyprus EPG every 2 days
 
 on:
   schedule:
-    - cron: '0 3 */2 * *'      # Κάθε 2 μέρες στις 03:00 UTC (6:00 πρωί Κύπρου)
-  workflow_dispatch:           # Μπορείς να τρέξεις χειροκίνητα
+    - cron: '0 4 */2 * *'      # Κάθε 2 μέρες στις 04:00 UTC (\~07:00 Κύπρου)
+  workflow_dispatch:           # Χειροκίνητη εκτέλεση
 
 jobs:
   generate-epg:
@@ -12,19 +12,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Generate EPG
+      - name: Generate Alpha Cyprus EPG
         run: python generate_epg.py
 
-      - name: Commit and push changes
+      - name: Commit and push updated EPG
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add alpha_epg.xml
-          git commit -m "Update Alpha Cyprus EPG - $(date +'%Y-%m-%d')" || echo "No changes to commit"
-          git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update Alpha Cyprus EPG - $(date +'%Y-%m-%d %H:%M')"
+            git push
+          fi
