@@ -83,8 +83,12 @@ def merge_programmes(new_programmes, target_date):
         start_dt = base_date + timedelta(hours=h, minutes=m)
 
         if i < len(new_programmes) - 1:
-            nh, nm = map(int, new_programmes[i + 1][0].split(":"))
-            stop_dt = base_date + timedelta(hours=nh, minutes=nm)
+    nh, nm = map(int, new_programmes[i + 1][0].split(":"))
+    stop_dt = base_date + timedelta(hours=nh, minutes=nm)
+
+    # 🔥 FIX: αν πάει πίσω → είναι επόμενη μέρα
+    if stop_dt <= start_dt:
+        stop_dt += timedelta(days=1)
         else:
             stop_dt = start_dt + timedelta(minutes=60)
 
