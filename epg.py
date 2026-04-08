@@ -50,7 +50,7 @@ def build_xml(programmes, today_date, tomorrow_date):
     xml = '<?xml version="1.0" encoding="utf-8"?>\n<tv>\n'
     xml += '<channel id="alpha.cy">\n  <display-name>Alpha Cyprus</display-name>\n</channel>\n'
 
-    def add_day(programmes, base_date, day_name):
+    def add_day(programmes, base_date):
         nonlocal xml
         for i, (time_str, title) in enumerate(programmes):
             try:
@@ -61,13 +61,13 @@ def build_xml(programmes, today_date, tomorrow_date):
                     nh, nm = map(int, programmes[i + 1][0].split(":"))
                     stop_dt = base_date.replace(hour=nh, minute=nm, second=0, microsecond=0)
 
-                    # Overnight: π.χ. 23:30 → 01:00
+                    # Overnight correction (23:30 → 01:00, 02:00 → 04:45 κλπ.)
                     if nh < h or (nh == h and nm < m):
                         stop_dt += timedelta(days=1)
                 else:
                     stop_dt = start_dt + timedelta(hours=1)
 
-                # Αν η ώρα είναι 00:00-05:59 → ανήκει στην επόμενη μέρα
+                # Προγράμματα μετά τα μεσάνυχτα (00:00 - 05:59) ανήκουν στην επόμενη μέρα
                 if h < 6:
                     start_dt += timedelta(days=1)
                     stop_dt += timedelta(days=1)
@@ -81,21 +81,21 @@ def build_xml(programmes, today_date, tomorrow_date):
             except Exception:
                 continue
 
-    # Μόνο Πέμπτη + Παρασκευή (καθαρό)
-    print(f"→ Προσθήκη πλήρους προγράμματος Πέμπτης ({today_date.strftime('%d/%m')})")
-    add_day(programmes, today_date, "Πέμπτη")
-    
-    print(f"→ Προσθήκη πλήρους προγράμματος Παρασκευής ({tomorrow_date.strftime('%d/%m')})")
-    add_day(programmes, tomorrow_date, "Παρασκευή")
+    # Μόνο σήμερα + αύριο (Πέμπτη + Παρασκευή όταν τρέχει στις 00:02 Παρασκευής)
+    add_day(programmes, today_date)
+    add_day(programmes, tomorrow_date)
 
     xml += "</tv>"
 
     with open("epg.xml", "w", encoding="utf-8") as f:
         f.write(xml)
 
-    print(f"\n✅ epg.xml ενημερώθηκε επιτυχώς με Πέμπτη + Παρασκευή!")
+    print(f"✅ epg.xml ενημερώθηκε με:")
+    print(f"   → {today_date.strftime('%A %d/%m/%Y')} (σήμερα)")
+    print(f"   → {tomorrow_date.strftime('%A %d/%m/%Y')} (αύριο)")
 
 def main():
+    # Σήμερα = η μέρα που τρέχει το script (00:02)
     now = datetime.now()
     today_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
     tomorrow_date = today_date + timedelta(days=1)
