@@ -36,11 +36,9 @@ def fetch_next_day_programmes():
 
     for line in lines:
         line = line.strip()
-
         if time_pattern.match(line):
             current_time = line
             continue
-
         if current_time and line:
             title = clean_title(line)
             if title:
@@ -54,10 +52,8 @@ def fetch_next_day_programmes():
 def load_existing():
     if not os.path.exists(XML_FILE):
         return []
-
     tree = ET.parse(XML_FILE)
     root = tree.getroot()
-
     data = []
     for prog in root.findall("programme"):
         data.append((
@@ -70,14 +66,11 @@ def load_existing():
 # ---------------- MERGE ----------------
 def merge_programmes(new_programmes, target_date):
     existing = load_existing()
-
     target_day = target_date.strftime("%Y%m%d")
 
     # 🔥 overwrite ίδιας μέρας
     existing = [x for x in existing if not x[0].startswith(target_day)]
-
     base_date = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
-
     new_entries = []
 
     for i, (time_str, title) in enumerate(new_programmes):
@@ -87,44 +80,34 @@ def merge_programmes(new_programmes, target_date):
         if i < len(new_programmes) - 1:
             nh, nm = map(int, new_programmes[i + 1][0].split(":"))
             stop_dt = base_date + timedelta(hours=nh, minutes=nm)
-
-            # 🔥 FIX midnight (αν πάει πίσω → επόμενη μέρα)
             if stop_dt <= start_dt:
                 stop_dt += timedelta(days=1)
-
         else:
             stop_dt = start_dt + timedelta(minutes=120)
 
         start = start_dt.strftime("%Y%m%d%H%M%S +0300")
         stop = stop_dt.strftime("%Y%m%d%H%M%S +0300")
-
         new_entries.append((start, stop, title))
 
-    # 🔥 κράτα μόνο 3 μέρες
-    now = datetime.now()
-    cutoff = now - timedelta(days=2)
+    # 🔥 keep last 3 days
+    valid_days = set(x[0][:8] for x in existing)
+    valid_days.add(target_day)
+    valid_days = sorted(valid_days)[-3:]
 
-    filtered = []
-    for start, stop, title in existing:
-        dt = datetime.strptime(start[:14], "%Y%m%d%H%M%S")
-        if dt >= cutoff:
-            filtered.append((start, stop, title))
-
+    filtered = [x for x in existing if x[0][:8] in valid_days]
     all_data = filtered + new_entries
 
-    # 🔥 remove duplicates
+    # remove duplicates
     unique = {}
     for item in all_data:
         unique[item[0]] = item
 
     final = sorted(unique.values(), key=lambda x: x[0])
-
     return final
 
 # ---------------- SAVE ----------------
 def save_xml(programmes):
     root = ET.Element("tv")
-
     channel = ET.SubElement(root, "channel", id="alpha.cy")
     display = ET.SubElement(channel, "display-name")
     display.text = "Alpha Cyprus"
@@ -141,16 +124,12 @@ def save_xml(programmes):
 def main():
     try:
         new_programmes, target_date = fetch_next_day_programmes()
-
         if not new_programmes:
             print("❌ Δεν βρέθηκαν προγράμματα")
             return
-
         merged = merge_programmes(new_programmes, target_date)
         save_xml(merged)
-
-        print(f"✅ OK - {len(merged)} programmes")
-
+        print(f"✅ OK - {len(merged)} programmes (3ήμερο)")
     except Exception as e:
         print("❌ ERROR:", e)
 
