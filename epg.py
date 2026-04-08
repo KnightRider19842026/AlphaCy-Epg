@@ -19,41 +19,24 @@ def fetch_programmes():
     resp.raise_for_status()
     soup = BeautifulSoup(resp.text, "html.parser")
 
-    # Καλύτερος τρόπος: βρίσκουμε όλα τα blocks με ώρα + τίτλο
     programmes = []
     time_pattern = re.compile(r"(\d{1,2}:\d{2})")
 
-    # Παίρνουμε το κείμενο και ψάχνουμε γραμμές
     text = soup.get_text(separator="\n")
     lines = [line.strip() for line in text.split("\n") if line.strip()]
 
     current_time = None
     for line in lines:
-        # Βρίσκουμε ώρα
         match = time_pattern.search(line)
-        if match and (":" in line) and len(line) < 10:   # πιθανή γραμμή ώρας
+        if match and len(line.replace(match.group(1), "").strip()) < 5:   # πιθανή γραμμή ώρας
             current_time = match.group(1)
             continue
 
-        # Αν έχουμε ώρα και υπάρχει τίτλος
-        if current_time and len(line) > 3 and not time_pattern.match(line):
+        if current_time and len(line) > 3:
             title = clean_title(line)
             if title and len(title) > 2:
                 programmes.append((current_time, title))
-                current_time = None   # reset για επόμενο
-
-    # Αν δεν βρήκε τίποτα με τον παραπάνω τρόπο, δοκιμάζουμε εναλλακτικό
-    if not programmes:
-        for line in lines:
-            if time_pattern.search(line) and any(x in line for x in ["21:", "22:", "23:", "00:", "01:", "02:"]):
-                parts = re.split(r'\s{2,}', line)
-                for part in parts:
-                    t_match = time_pattern.search(part)
-                    if t_match:
-                        t = t_match.group(1)
-                        title_part = part.replace(t, "").strip()
-                        if title_part:
-                            programmes.append((t, clean_title(title_part)))
+                current_time = None
 
     return programmes
 
@@ -72,26 +55,33 @@ def build_xml(programmes, today_date, tomorrow_date):
                 h, m = map(int, time_str.split(":"))
                 start_dt = base_date.replace(hour=h, minute=m, second=0, microsecond=0)
 
-                # Υπολογισμός stop
+                # Υπολογισμός stop time
                 if i < len(programmes) - 1:
                     nh, nm = map(int, programmes[i + 1][0].split(":"))
                     stop_dt = base_date.replace(hour=nh, minute=nm, second=0, microsecond=0)
+
+                    # IMPORTANT: Αν η επόμενη ώρα είναι μικρότερη → είναι overnight (π.χ. 23:30 → 01:00)
+                    if nh < h or (nh == h and nm < m):
+                        stop_dt += timedelta(days=1)
                 else:
+                    # Τελευταίο πρόγραμμα της λίστας → default +1 ώρα
                     stop_dt = start_dt + timedelta(hours=1)
 
-                # Αν η ώρα είναι μετά τα μεσάνυχτα, πηγαίνουμε στην επόμενη μέρα
-                if h < 6:   # προγράμματα μετά τα μεσάνυχτα
+                # Αν η ώρα έναρξης είναι πολύ μικρή (π.χ. 00:xx ή 01:xx) → πιθανότατα επόμενη μέρα
+                if h < 6:
                     start_dt += timedelta(days=1)
                     stop_dt += timedelta(days=1)
 
                 start_str = start_dt.strftime("%Y%m%d%H%M%S +0300")
-                stop_str = stop_dt.strftime("%Y%m%d%H%M%S +0300")
+                stop_str  = stop_dt.strftime("%Y%m%d%H%M%S +0300")
 
                 xml += f'<programme channel="alpha.cy" start="{start_str}" stop="{stop_str}">\n'
                 xml += f"  <title>{title}</title>\n</programme>\n"
-            except:
+
+            except Exception:
                 continue
 
+    # Προσθήκη προγραμμάτων για σήμερα + αύριο
     add_day(programmes, today_date)
     add_day(programmes, tomorrow_date)
 
@@ -100,7 +90,7 @@ def build_xml(programmes, today_date, tomorrow_date):
     with open("epg.xml", "w", encoding="utf-8") as f:
         f.write(xml)
 
-    print(f"✅ epg.xml δημιουργήθηκε με {len(programmes)} προγράμματα")
+    print(f"✅ epg.xml ενημερώθηκε με {len(programmes)} προγράμματα")
     print(f"   Σήμερα: {today_date.strftime('%d/%m')} | Αύριο: {tomorrow_date.strftime('%d/%m')}")
 
 def main():
@@ -108,15 +98,14 @@ def main():
     today_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
     tomorrow_date = today_date + timedelta(days=1)
 
-    print(f"🔄 Λήψη προγράμματος Alpha Cyprus στις {now.strftime('%H:%M')}...")
+    print(f"🔄 Λήψη προγράμματος Alpha Cyprus...")
 
     programmes = fetch_programmes()
 
     if programmes:
-        print(f"Βρέθηκαν {len(programmes)} προγράμματα (συμπεριλαμβανομένων μετά τις 21:00)")
         build_xml(programmes, today_date, tomorrow_date)
     else:
-        print("⚠️ Δεν βρέθηκαν προγράμματα – ελέγξτε την ιστοσελίδα.")
+        print("⚠️ Δεν βρέθηκαν προγράμματα.")
 
 if __name__ == "__main__":
     main()
