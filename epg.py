@@ -34,6 +34,7 @@ def fetch_next_day_programmes():
 
     for line in lines:
         line = line.strip()
+
         if time_pattern.match(line):
             current_time = line
             continue
@@ -64,17 +65,14 @@ def load_existing():
         ))
     return data
 
-# ---------------- MAIN MERGE ----------------
+# ---------------- MERGE ----------------
 def merge_programmes(new_programmes, target_date):
     existing = load_existing()
 
-    # 👉 έλεγχος duplicate μέρας
-    existing_days = set(x[0][:8] for x in existing)
     target_day = target_date.strftime("%Y%m%d")
 
-    if target_day in existing_days:
-        print("⏭️ Η μέρα υπάρχει ήδη - skip")
-        return existing
+    # 🔥 IMPORTANT FIX → overwrite ίδιας μέρας
+    existing = [x for x in existing if not x[0].startswith(target_day)]
 
     base_date = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
 
@@ -95,7 +93,7 @@ def merge_programmes(new_programmes, target_date):
 
         new_entries.append((start, stop, title))
 
-    # 👉 κράτα μόνο 3 μέρες
+    # 🔥 κράτα μόνο 3 μέρες
     now = datetime.now()
     cutoff = now - timedelta(days=2)
 
@@ -107,7 +105,7 @@ def merge_programmes(new_programmes, target_date):
 
     all_data = filtered + new_entries
 
-    # 👉 remove duplicates (by start time)
+    # 🔥 remove duplicates
     unique = {}
     for item in all_data:
         unique[item[0]] = item
@@ -144,7 +142,7 @@ def main():
         merged = merge_programmes(new_programmes, target_date)
         save_xml(merged)
 
-        print(f"✅ OK - {len(merged)} programmes συνολικά")
+        print(f"✅ OK - {len(merged)} programmes")
 
     except Exception as e:
         print("❌ ERROR:", e)
