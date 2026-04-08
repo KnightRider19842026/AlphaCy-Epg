@@ -8,9 +8,10 @@ import os
 URL = "https://www.alphacyprus.com.cy/program"
 XML_FILE = "epg.xml"
 
-# ---------------- FIXED DURATIONS (λεπτά) ----------------
-FIX_DURATIONS = {
-    "ALPHA ΚΑΛΗΜΕΡΑ": 90,
+# ---------------- ΑΚΡΙΒΕΣ ΩΡΕΣ ΓΝΩΣΤΩΝ ΕΚΠΟΜΠΩΝ ----------------
+# Format: title -> duration in minutes
+FIXED_TIMES = {
+    "ALPHA ΚΑΛΗΜΕΡΑ": 100,   # 06:45 - 09:25 (~100 λεπτά)
     "ALPHA ΕΝΗΜΕΡΩΣΗ": 150,
     "DEAL": 60,
     "ALPHA NEWS": 60,
@@ -92,11 +93,9 @@ def merge_programmes(days_programmes):
             h, m = map(int, time_str.split(":"))
             start_dt = base_date + timedelta(hours=h, minutes=m)
 
-            # fixed duration if exists
-            if title in FIX_DURATIONS:
-                stop_dt = start_dt + timedelta(minutes=FIX_DURATIONS[title])
+            if title in FIXED_TIMES:
+                stop_dt = start_dt + timedelta(minutes=FIXED_TIMES[title])
             else:
-                # default: μέχρι το επόμενο πρόγραμμα ή +120 λεπτά
                 if i < len(programmes) - 1:
                     nh, nm = map(int, programmes[i + 1][0].split(":"))
                     stop_dt = base_date + timedelta(hours=nh, minutes=nm)
@@ -149,7 +148,7 @@ def main():
 
         merged = merge_programmes(days_programmes)
         save_xml(merged)
-        print(f"✅ OK - {len(merged)} programmes (3ήμερο με fixed durations)")
+        print(f"✅ OK - {len(merged)} programmes (3ήμερο με σωστά stop times)")
     except Exception as e:
         print("❌ ERROR:", e)
 
