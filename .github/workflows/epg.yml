@@ -2,14 +2,13 @@ name: Update Alpha EPG
 
 on:
   schedule:
-    # Τρέχει στις 00:02 ώρα Κύπρου (21:02 UTC για θερινή ώρα)
+    # 21:02 UTC = 00:02 ώρα Κύπρου
     - cron: '2 21 * * *'
-  workflow_dispatch: # Σου επιτρέπει να το τρέχεις χειροκίνητα όποτε θες
+  workflow_dispatch:
 
 jobs:
   update-epg:
     runs-on: ubuntu-latest
-    # Απαραίτητο για να μπορεί το GitHub να γράψει το epg.xml πίσω στο repo σου
     permissions:
       contents: write
 
@@ -37,9 +36,8 @@ jobs:
           
           git add epg.xml
           
-          # Αν υπάρχουν αλλαγές, κάνε commit και push
           if ! git diff --staged --quiet; then
-            git commit -m "Update Alpha EPG - Clean Titles"
+            git commit -m "Update Alpha EPG (Clean Titles & Descriptions)"
             git push
           else
             echo "No changes in epg.xml"
