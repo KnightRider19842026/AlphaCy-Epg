@@ -2,8 +2,8 @@ name: Update Alpha EPG
 
 on:
   schedule:
-    # Τρέχει κάθε μέρα στις 23:30 ώρα Κύπρου (UTC+3)
-    - cron: '30 20 * * *'     # 20:30 UTC = 23:30 Κύπρου
+    # Τρέχει κάθε μέρα στις 23:45 ώρα Κύπρου (UTC+3)
+    - cron: '45 20 * * *'     # 20:45 UTC = 23:45 Κύπρου
   workflow_dispatch:
 
 jobs:
