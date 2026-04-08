@@ -44,37 +44,6 @@ def fetch_next_day_programmes():
     tomorrow = datetime.now() + timedelta(days=1)
     return programmes, tomorrow
 
-def load_existing_programmes():
-    programmes = []
-
-    if not os.path.exists(XML_FILE):
-        return programmes
-
-    tree = ET.parse(XML_FILE)
-    root = tree.getroot()
-
-    for prog in root.findall("programme"):
-        start = prog.attrib["start"]
-        title = prog.find("title").text
-        programmes.append((start, title))
-
-    return programmes
-
-def save_xml(all_programmes):
-    root = ET.Element("tv")
-
-    channel = ET.SubElement(root, "channel", id="alpha.cy")
-    display = ET.SubElement(channel, "display-name")
-    display.text = "Alpha Cyprus"
-
-    for start, stop, title in all_programmes:
-        prog = ET.SubElement(root, "programme", channel="alpha.cy", start=start, stop=stop)
-        t = ET.SubElement(prog, "title")
-        t.text = title
-
-    tree = ET.ElementTree(root)
-    tree.write(XML_FILE, encoding="utf-8", xml_declaration=True)
-
 def merge_programmes(new_programmes, target_date):
     existing = []
 
@@ -86,7 +55,6 @@ def merge_programmes(new_programmes, target_date):
             existing.append(prog)
 
     base_date = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
-
     new_entries = []
 
     for i, (time_str, title) in enumerate(new_programmes):
@@ -104,9 +72,8 @@ def merge_programmes(new_programmes, target_date):
 
         new_entries.append((start, stop, title))
 
-    # Κράτα μόνο τελευταίες 2 μέρες
     now = datetime.now()
-    cutoff = now - timedelta(days=1)
+    cutoff = now - timedelta(days=2)  # 🔥 3ήμερο
 
     filtered_existing = []
     for prog in existing:
@@ -119,22 +86,32 @@ def merge_programmes(new_programmes, target_date):
                 prog.find("title").text
             ))
 
-    # Merge
     all_programmes = filtered_existing + new_entries
 
-    # Remove duplicates
     unique = {}
     for start, stop, title in all_programmes:
         unique[start] = (start, stop, title)
 
     final_programmes = sorted(unique.values(), key=lambda x: x[0])
 
-    save_xml(final_programmes)
+    root = ET.Element("tv")
+
+    channel = ET.SubElement(root, "channel", id="alpha.cy")
+    display = ET.SubElement(channel, "display-name")
+    display.text = "Alpha Cyprus"
+
+    for start, stop, title in final_programmes:
+        prog = ET.SubElement(root, "programme", channel="alpha.cy", start=start, stop=stop)
+        t = ET.SubElement(prog, "title")
+        t.text = title
+
+    tree = ET.ElementTree(root)
+    tree.write(XML_FILE, encoding="utf-8", xml_declaration=True)
 
 def main():
     new_programmes, target_date = fetch_next_day_programmes()
     merge_programmes(new_programmes, target_date)
-    print("✅ Έγινε update με 2ήμερο EPG (χωρίς να σβήνονται τα παλιά).")
+    print("✅ 3ήμερο EPG update OK")
 
 if __name__ == "__main__":
     main()
