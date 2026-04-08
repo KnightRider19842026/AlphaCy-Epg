@@ -9,14 +9,15 @@ def clean_and_split(text):
     if not text:
         return "", ""
     
-    # 1. Βασικός καθαρισμός από ανεπιθύμητες λέξεις
+    # Αφαίρεση λέξεων-σκουπιδιών
     text = re.sub(r"microsite", "", text, flags=re.IGNORECASE)
     text = re.sub(r"live now", "", text, flags=re.IGNORECASE)
     text = re.sub(r"καθημερινά στις", "", text, flags=re.IGNORECASE)
     text = re.sub(r"Δες όλα τα επεισόδια στο WEBTV", "", text, flags=re.IGNORECASE)
     text = re.sub(r"copyright.*", "", text, flags=re.IGNORECASE)
-    
-    # 2. Λίστα με παρουσιαστές
+    text = re.sub(r"\(.*?\)", "", text) # Αφαιρεί παρενθέσεις
+
+    # Λίστα παρουσιαστών
     hosts_map = {
         "ΚΑΤΕΡΙΝΑ ΑΓΑΠΗΤΟΥ": "Με την Κατερίνα Αγαπητού",
         "ΚΑΤΙΑ ΣΑΒΒΑ": "Με την Κάτια Σάββα",
@@ -27,19 +28,19 @@ def clean_and_split(text):
     }
     
     title = text
-    desc = "" # Προεπιλογή: Κενή περιγραφή
+    desc = "" # Εδώ πλέον είναι άδειο από προεπιλογή
     
-    # Έλεγχος αν κάποιος παρουσιαστής είναι μέσα στο κείμενο
     for host_key, host_phrase in hosts_map.items():
         if host_key in text.upper():
+            # Χωρίζει τον τίτλο στο "με την/τον"
             parts = re.split(f"με την|με τον|με", text, flags=re.IGNORECASE)
             if len(parts) > 1:
                 title = parts[0].strip()
                 desc = host_phrase
             break
 
-    # Τελικό συμμάζεμα τίτλου
-    title = re.sub(r"\s+", " ", title).strip().strip('- ')
+    # Καθαρισμός συμβόλων στο τέλος του τίτλου
+    title = re.sub(r"\s+", " ", title).strip().strip('-–— :')
     return title, desc
 
 def fetch_programmes():
@@ -63,8 +64,7 @@ def fetch_programmes():
         
         if current_time:
             title, desc = clean_and_split(line)
-            # Φιλτράρισμα άκυρων γραμμών
-            if title and len(title) > 2 and "Designed" not in title and "Copyright" not in title:
+            if title and len(title) > 2 and "Designed" not in title:
                 programmes.append((current_time, title, desc))
                 current_time = None
     return programmes
@@ -81,6 +81,7 @@ def build_xml(programmes, target_days):
                 h, m = map(int, time_str.split(":"))
                 start_dt = base_date.replace(hour=h, minute=m, second=0, microsecond=0)
 
+                # Stop Time logic
                 if i < len(programmes) - 1:
                     nh, nm = map(int, programmes[i + 1][0].split(":"))
                     stop_dt = base_date.replace(hour=nh, minute=nm, second=0, microsecond=0)
@@ -92,7 +93,7 @@ def build_xml(programmes, target_days):
                     start_dt += timedelta(days=1)
                     stop_dt += timedelta(days=1)
 
-                # Ειδικός κανόνας για το Deal Πέμπτης
+                # DEAL Πέμπτης
                 if is_thursday and h == 19 and m == 0:
                     title_final, desc_final = "DEAL", "Με τον Γιώργο Θαναηλάκη"
                 else:
@@ -103,8 +104,7 @@ def build_xml(programmes, target_days):
 
                 xml += f'<programme channel="alpha.cy" start="{start_str}" stop="{stop_str}">\n'
                 xml += f"  <title>{title_final}</title>\n"
-                # Εμφάνιση περιγραφής μόνο αν δεν είναι κενή
-                if desc_final:
+                if desc_final: # Προσθήκη desc μόνο αν υπάρχει περιεχόμενο
                     xml += f"  <desc>{desc_final}</desc>\n"
                 xml += "</programme>\n"
             except:
@@ -122,7 +122,7 @@ def main():
     progs = fetch_programmes()
     if progs:
         build_xml(progs, [today, tomorrow])
-        print("✅ Το EPG ενημερώθηκε!")
+        print("✅ Έτοιμο! Καθαροί τίτλοι και μόνο απαραίτητες περιγραφές.")
 
 if __name__ == "__main__":
     main()
