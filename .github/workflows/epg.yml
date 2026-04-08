@@ -1,40 +1,42 @@
-name: Update Alpha Cyprus EPG
+name: Update Alpha EPG
 
 on:
-  workflow_dispatch:   # επιτρέπει manual run από GitHub UI
   schedule:
-    - cron: "0 3 * * *"   # UTC 06:00 Κύπρου
-    - cron: "0 15 * * *"  # UTC 18:00 Κύπρου
+    # Τρέχει κάθε μέρα στις 18:00 ώρα Κύπρου (UTC+3)
+    - cron: '0 15 * * *'
+  workflow_dispatch:   # για χειροκίνητη εκτέλεση
 
 jobs:
   update-epg:
     runs-on: ubuntu-latest
+
     steps:
-      # Βασικό checkout
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # Setup Python
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
-      # Εγκατάσταση dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install requests beautifulsoup4 lxml
+          pip install requests beautifulsoup4
 
-      # Τρέξιμο epg.py
-      - name: Run EPG script
+      - name: Run epg.py
         run: python epg.py
 
-      # Commit & Push με pull για αποφυγή conflicts
-      - name: Commit and push changes
+      - name: Commit and push epg.xml if changed
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          
           git add epg.xml
-          git commit -m "Auto-update epg.xml" || echo "No changes"
-          git pull --rebase origin main
-          git push origin main
+          
+          if ! git diff --staged --quiet; then
+            git commit -m "Update Alpha EPG - 2 days"
+            git push
+          else
+            echo "No changes in epg.xml"
+          fi
