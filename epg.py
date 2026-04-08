@@ -10,7 +10,6 @@ def clean_title(title):
     title = re.sub(r"live now", "", title, flags=re.IGNORECASE)
     title = re.sub(r"Δες όλα τα επεισόδια στο WEBTV", "", title, flags=re.IGNORECASE)
     title = re.sub(r"copyright.*", "", title, flags=re.IGNORECASE)
-    title = re.sub(r"(ΚΑΘΗΜΕΡΙΝΑ|ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ|ΔΕΥΤΕΡΑ|ΤΡΙΤΗ|ΤΕΤΑΡΤΗ|ΠΕΜΠΤΗ|ΠΑΡΑΣΚΕΥΗ|ΣΑΒΒΑΤΟ|ΚΥΡΙΑΚΗ)\s*ΣΤΙΣ\s*\d{1,2}:\d{2}", "", title, flags=re.IGNORECASE)
     title = re.sub(r"(ΚΑΘΗΜΕΡΙΝΑ|ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ).*?\d{1,2}:\d{2}", "", title, flags=re.IGNORECASE)
     return re.sub(r"\s+", " ", title).strip().strip('- ')
 
@@ -29,18 +28,29 @@ def fetch_programmes():
     for line in lines:
         match = time_pattern.search(line)
         if match:
-            possible_time = match.group(1)
-            if len(line.replace(possible_time, "").strip()) < 12:
-                current_time = possible_time
+            t = match.group(1)
+            # Πιο αυστηρός έλεγχος για να πιάνει μόνο γραμμές ώρας
+            if len(line) < 15 and any(c.isdigit() for c in line):
+                current_time = t
                 continue
 
-        if current_time and len(line) > 3:
+        if current_time and len(line) > 4:
             title = clean_title(line)
-            if title and len(title) > 2 and "Designed" not in title:
+            if title and len(title) > 3 and "Designed" not in title and "developed" not in title:
                 programmes.append((current_time, title))
-                current_time = None
+                current_time = None   # reset
 
-    return programmes
+    # Αφαιρούμε διπλότυπες ώρες (πολύ σημαντικό για το 06:00)
+    seen = {}
+    clean_prog = []
+    for t, title in programmes:
+        if t not in seen:
+            seen[t] = title
+            clean_prog.append((t, title))
+        elif title != seen[t]:
+            clean_prog.append((t, title))   # κρατάμε και το δεύτερο αν είναι διαφορετικό
+
+    return clean_prog
 
 def build_xml(programmes, today_date, tomorrow_date):
     xml = '<?xml version="1.0" encoding="utf-8"?>\n<tv>\n'
@@ -53,20 +63,21 @@ def build_xml(programmes, today_date, tomorrow_date):
                 h, m = map(int, time_str.split(":"))
                 start_dt = base_date.replace(hour=h, minute=m, second=0, microsecond=0)
 
+                # Υπολογισμός stop
                 if i < len(programmes) - 1:
                     nh, nm = map(int, programmes[i + 1][0].split(":"))
                     stop_dt = base_date.replace(hour=nh, minute=nm, second=0, microsecond=0)
-                    if nh < h or (nh == h and nm < m):
+                    if nh < h or (nh == h and nm <= m):   # overnight
                         stop_dt += timedelta(days=1)
                 else:
                     stop_dt = start_dt + timedelta(hours=1)
 
-                if h < 6:   # overnight
+                if h < 6:   # νυχτερινά προγράμματα
                     start_dt += timedelta(days=1)
                     stop_dt += timedelta(days=1)
 
-                # Διόρθωση ίδιας ώρας (18:00-18:00)
-                if (stop_dt - start_dt).total_seconds() < 60:
+                # Διόρθωση μηδενικής διάρκειας
+                if (stop_dt - start_dt).total_seconds() < 300:   # λιγότερο από 5 λεπτά
                     stop_dt = start_dt + timedelta(minutes=60)
 
                 start_str = start_dt.strftime("%Y%m%d%H%M%S +0300")
@@ -86,9 +97,9 @@ def build_xml(programmes, today_date, tomorrow_date):
     with open("epg.xml", "w", encoding="utf-8") as f:
         f.write(xml)
 
-    print(f"✅ Ενημερώθηκε με:")
-    print(f"   → {today_date.strftime('%A %d/%m')} (σήμερα)")
-    print(f"   → {tomorrow_date.strftime('%A %d/%m')} (αύριο)")
+    print(f"✅ epg.xml δημιουργήθηκε με 2 ημέρες:")
+    print(f"   Σήμερα: {today_date.strftime('%A %d/%m/%Y')}")
+    print(f"   Αύριο : {tomorrow_date.strftime('%A %d/%m/%Y')}")
 
 def main():
     now = datetime.now()
@@ -96,6 +107,8 @@ def main():
     tomorrow_date = today_date + timedelta(days=1)
 
     programmes = fetch_programmes()
+    print(f"Βρέθηκαν {len(programmes)} προγράμματα από την ιστοσελίδα")
+
     if programmes:
         build_xml(programmes, today_date, tomorrow_date)
     else:
