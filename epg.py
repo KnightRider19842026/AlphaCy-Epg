@@ -89,6 +89,7 @@ def build_xml(programmes, today_date, tomorrow_date):
             except:
                 continue
 
+    # Καθαρίζουμε μόνο τις δύο τελευταίες ημέρες
     add_day(today_date)
     add_day(tomorrow_date)
 
