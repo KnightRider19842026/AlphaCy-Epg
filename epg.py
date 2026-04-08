@@ -29,8 +29,7 @@ def fetch_programmes():
         match = time_pattern.search(line)
         if match:
             t = match.group(1)
-            # Πολύ αυστηρός έλεγχος για γραμμές ώρας
-            if len(line) < 20 and any(c.isdigit() for c in t):
+            if len(line) < 20:
                 current_time = t
                 continue
 
@@ -40,14 +39,14 @@ def fetch_programmes():
                 programmes.append((current_time, title))
                 current_time = None
 
-    # Αφαιρούμε διπλότυπες ώρες (σημαντικό για το 06:00)
+    # Αφαίρεση διπλότυπων ωρών
     clean_prog = []
-    seen_times = set()
+    seen = {}
     for t, title in programmes:
-        if t not in seen_times:
-            seen_times.add(t)
+        if t not in seen:
+            seen[t] = title
             clean_prog.append((t, title))
-        elif title != clean_prog[-1][1]:   # αν είναι διαφορετικός τίτλος, κρατάμε και αυτόν
+        elif title != seen[t]:
             clean_prog.append((t, title))
 
     return clean_prog
@@ -66,35 +65,41 @@ def build_xml(programmes, today_date, tomorrow_date):
                 if i < len(programmes) - 1:
                     nh, nm = map(int, programmes[i + 1][0].split(":"))
                     stop_dt = base_date.replace(hour=nh, minute=nm, second=0, microsecond=0)
-
-                    # Overnight (23:xx → 01:xx)
                     if nh < h or (nh == h and nm < m):
                         stop_dt += timedelta(days=1)
                 else:
                     stop_dt = start_dt + timedelta(hours=1)
 
-                # Προγράμματα μετά τα μεσάνυχτα
                 if h < 6:
                     start_dt += timedelta(days=1)
                     stop_dt += timedelta(days=1)
 
-                # Διόρθωση λάθους διάρκειας (π.χ. 06:00-06:00)
-                if (stop_dt - start_dt).total_seconds() < 300:   # λιγότερο από 5 λεπτά
+                # Διόρθωση πολύ μικρής διάρκειας
+                if (stop_dt - start_dt).total_seconds() < 300:
                     stop_dt = start_dt + timedelta(minutes=60)
 
                 start_str = start_dt.strftime("%Y%m%d%H%M%S +0300")
                 stop_str  = stop_dt.strftime("%Y%m%d%H%M%S +0300")
 
+                # Ειδική περίπτωση για DEAL
+                if "DEAL" in title.upper():
+                    title_text = "DEAL"
+                    desc = "Με τον Γιώργο Θαναηλάκη"
+                else:
+                    title_text = title
+                    desc = ""
+
                 xml += f'<programme channel="alpha.cy" start="{start_str}" stop="{stop_str}">\n'
-                xml += f"  <title>{title}</title>\n</programme>\n"
+                xml += f"  <title>{title_text}</title>\n"
+                if desc:
+                    xml += f"  <desc>{desc}</desc>\n"
+                xml += "</programme>\n"
 
             except:
                 continue
 
-    # Μόνο οι 2 τελευταίες ημέρες (πολύ επιθετικό καθάρισμα)
-    print(f"→ Προσθήκη {today_date.strftime('%A %d/%m')}")
+    # ΠΟΛΥ ΕΠΙΘΕΤΙΚΟ ΚΑΘΑΡΙΣΜΑ: Μόνο οι 2 τελευταίες ημέρες
     add_day(today_date)
-    print(f"→ Προσθήκη {tomorrow_date.strftime('%A %d/%m')}")
     add_day(tomorrow_date)
 
     xml += "</tv>"
@@ -102,9 +107,9 @@ def build_xml(programmes, today_date, tomorrow_date):
     with open("epg.xml", "w", encoding="utf-8") as f:
         f.write(xml)
 
-    print(f"\n✅ epg.xml ενημερώθηκε επιτυχώς!")
-    print(f"   Σήμερα : {today_date.strftime('%A %d/%m/%Y')}")
-    print(f"   Αύριο  : {tomorrow_date.strftime('%A %d/%m/%Y')}")
+    print(f"✅ epg.xml ενημερώθηκε (μόνο 2 ημέρες)")
+    print(f"   Σήμερα: {today_date.strftime('%A %d/%m/%Y')}")
+    print(f"   Αύριο : {tomorrow_date.strftime('%A %d/%m/%Y')}")
 
 def main():
     now = datetime.now()
@@ -112,7 +117,7 @@ def main():
     tomorrow_date = today_date + timedelta(days=1)
 
     programmes = fetch_programmes()
-    print(f"Βρέθηκαν {len(programmes)} προγράμματα από την Alpha")
+    print(f"Βρέθηκαν {len(programmes)} προγράμματα")
 
     if programmes:
         build_xml(programmes, today_date, tomorrow_date)
