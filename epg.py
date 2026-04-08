@@ -14,13 +14,16 @@ def clean_title(title):
     return re.sub(r"\s+", " ", title).strip().strip('- ')
 
 def fetch_programmes():
-    resp = requests.get(URL)
-    resp.raise_for_status()
-    soup = BeautifulSoup(resp.text, "html.parser")
+    try:
+        resp = requests.get(URL)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+    except Exception as e:
+        print(f"Σφάλμα κατά τη λήψη: {e}")
+        return []
 
     programmes = []
     time_pattern = re.compile(r"(\d{1,2}:\d{2})")
-
     text = soup.get_text(separator="\n")
     lines = [line.strip() for line in text.split("\n") if line.strip()]
 
@@ -39,7 +42,6 @@ def fetch_programmes():
                 programmes.append((current_time, title))
                 current_time = None
 
-    # Αφαίρεση διπλότυπων ωρών
     clean_prog = []
     seen = {}
     for t, title in programmes:
@@ -51,17 +53,19 @@ def fetch_programmes():
 
     return clean_prog
 
-def build_xml(programmes, today_date, tomorrow_date):
+def build_xml(programmes, target_days):
     xml = '<?xml version="1.0" encoding="utf-8"?>\n<tv>\n'
     xml += '<channel id="alpha.cy">\n  <display-name>Alpha Cyprus</display-name>\n</channel>\n'
 
-    def add_day(base_date):
-        nonlocal xml
+    for base_date in target_days:
+        is_thursday = base_date.strftime('%A') == 'Thursday'
+        
         for i, (time_str, title) in enumerate(programmes):
             try:
                 h, m = map(int, time_str.split(":"))
                 start_dt = base_date.replace(hour=h, minute=m, second=0, microsecond=0)
 
+                # Υπολογισμός stop_dt
                 if i < len(programmes) - 1:
                     nh, nm = map(int, programmes[i + 1][0].split(":"))
                     stop_dt = base_date.replace(hour=nh, minute=nm, second=0, microsecond=0)
@@ -70,24 +74,22 @@ def build_xml(programmes, today_date, tomorrow_date):
                 else:
                     stop_dt = start_dt + timedelta(hours=1)
 
-                if h < 6:
+                # Διόρθωση για μεταμεσονύκτιες εκπομπές
+                if h < 5: 
                     start_dt += timedelta(days=1)
                     stop_dt += timedelta(days=1)
 
-                # Διόρθωση πολύ μικρής διάρκειας
-                if (stop_dt - start_dt).total_seconds() < 300:
-                    stop_dt = start_dt + timedelta(minutes=60)
-
-                start_str = start_dt.strftime("%Y%m%d%H%M%S +0300")
-                stop_str  = stop_dt.strftime("%Y%m%d%H%M%S +0300")
-
-                # Ειδική περίπτωση για DEAL
-                if "DEAL" in title.upper():
+                # --- ΕΙΔΙΚΟΣ ΚΑΝΟΝΑΣ ΓΙΑ DEAL ΠΕΜΠΤΗΣ 19:00 ---
+                if is_thursday and h == 19 and m == 0:
                     title_text = "DEAL"
                     desc = "Με τον Γιώργο Θαναηλάκη"
                 else:
                     title_text = title
                     desc = ""
+                # ----------------------------------------------
+
+                start_str = start_dt.strftime("%Y%m%d%H%M%S +0300")
+                stop_str  = stop_dt.strftime("%Y%m%d%H%M%S +0300")
 
                 xml += f'<programme channel="alpha.cy" start="{start_str}" stop="{stop_str}">\n'
                 xml += f"  <title>{title_text}</title>\n"
@@ -95,32 +97,34 @@ def build_xml(programmes, today_date, tomorrow_date):
                     xml += f"  <desc>{desc}</desc>\n"
                 xml += "</programme>\n"
 
-            except:
+            except Exception as e:
                 continue
-
-    # ΠΟΛΥ ΕΠΙΘΕΤΙΚΟ ΚΑΘΑΡΙΣΜΑ: Μόνο οι 2 τελευταίες ημέρες
-    add_day(today_date)
-    add_day(tomorrow_date)
 
     xml += "</tv>"
 
     with open("epg.xml", "w", encoding="utf-8") as f:
         f.write(xml)
 
-    print(f"✅ epg.xml ενημερώθηκε (μόνο 2 ημέρες)")
-    print(f"   Σήμερα: {today_date.strftime('%A %d/%m/%Y')}")
-    print(f"   Αύριο : {tomorrow_date.strftime('%A %d/%m/%Y')}")
-
 def main():
+    # Εύρεση της τρέχουσας εβδομάδας
     now = datetime.now()
-    today_date = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    tomorrow_date = today_date + timedelta(days=1)
+    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    # Υπολογισμός Πέμπτης και Παρασκευής αυτής της εβδομάδας
+    # Αν σήμερα είναι μετά την Παρασκευή, θα πάρει τις επόμενες.
+    # Αν θες συγκεκριμένες ημερομηνίες, μπορείς να τις ορίσεις και χειροκίνητα.
+    days_to_thursday = (3 - today.weekday()) % 7
+    thursday = today + timedelta(days=days_to_thursday)
+    friday = thursday + timedelta(days=1)
 
     programmes = fetch_programmes()
-    print(f"Βρέθηκαν {len(programmes)} προγράμματα")
-
+    
     if programmes:
-        build_xml(programmes, today_date, tomorrow_date)
+        build_xml(programmes, [thursday, friday])
+        print(f"✅ epg.xml ενημερώθηκε.")
+        print(f"📅 Πέμπτη: {thursday.strftime('%d/%m/%Y')}")
+        print(f"📅 Παρασκευή: {friday.strftime('%d/%m/%Y')}")
+        print(f"📺 Το Deal προστέθηκε στην Πέμπτη στις 19:00.")
     else:
         print("⚠️ Δεν βρέθηκαν προγράμματα.")
 
