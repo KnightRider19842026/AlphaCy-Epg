@@ -14,28 +14,31 @@ def clean_and_split(text):
     text = re.sub(r"live now", "", text, flags=re.IGNORECASE)
     text = re.sub(r"καθημερινά στις", "", text, flags=re.IGNORECASE)
     text = re.sub(r"Δες όλα τα επεισόδια στο WEBTV", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"copyright.*", "", text, flags=re.IGNORECASE)
     
-    # 2. Λίστα με παρουσιαστές για να τους ξεχωρίζουμε στην περιγραφή
-    hosts = [
-        "ΚΑΤΕΡΙΝΑ ΑΓΑΠΗΤΟΥ", "ΚΑΤΙΑ ΣΑΒΒΑ", "ΓΙΩΡΓΟΣ ΘΑΝΑΗΛΑΚΗΣ", 
-        "ΛΟΥΗΣ ΠΑΤΣΑΛΙΔΗΣ", "ΧΡΙΣΤΙΑΝΑ ΑΡΙΣΤΟΤΕΛΟΥΣ"
-    ]
+    # 2. Λίστα με παρουσιαστές
+    hosts_map = {
+        "ΚΑΤΕΡΙΝΑ ΑΓΑΠΗΤΟΥ": "Με την Κατερίνα Αγαπητού",
+        "ΚΑΤΙΑ ΣΑΒΒΑ": "Με την Κάτια Σάββα",
+        "ΓΙΩΡΓΟΣ ΘΑΝΑΗΛΑΚΗΣ": "Με τον Γιώργο Θαναηλάκη",
+        "ΛΟΥΗΣ ΠΑΤΣΑΛΙΔΗΣ": "Με τον Λούη Πατσαλίδη",
+        "ΧΡΙΣΤΙΑΝΑ ΑΡΙΣΤΟΤΕΛΟΥΣ": "Με την Χριστιάνα Αριστοτέλους",
+        "ΜΙΧΑΛΗΣ ΣΟΦΟΚΛΕΟΥΣ": "Με τον Μιχάλη Σοφοκλέους"
+    }
     
     title = text
-    desc = "Πρόγραμμα του Alpha Cyprus"
+    desc = "" # Προεπιλογή: Κενή περιγραφή
     
     # Έλεγχος αν κάποιος παρουσιαστής είναι μέσα στο κείμενο
-    for host in hosts:
-        if host in text.upper():
-            # Χωρίζουμε το όνομα της εκπομπής από τον παρουσιαστή
-            # Π.Χ. "ALPHA ΚΑΛΗΜΕΡΑ ΜΕ ΤΗΝ ΚΑΤΕΡΙΝΑ ΑΓΑΠΗΤΟΥ"
+    for host_key, host_phrase in hosts_map.items():
+        if host_key in text.upper():
             parts = re.split(f"με την|με τον|με", text, flags=re.IGNORECASE)
             if len(parts) > 1:
                 title = parts[0].strip()
-                desc = f"Με την {host}" if "ΚΑΤΕΡΙΝΑ" in host or "ΚΑΤΙΑ" in host or "ΧΡΙΣΤΙΑΝΑ" in host else f"Με τον {host}"
+                desc = host_phrase
             break
 
-    # Τελικό συμμάζεμα
+    # Τελικό συμμάζεμα τίτλου
     title = re.sub(r"\s+", " ", title).strip().strip('- ')
     return title, desc
 
@@ -60,7 +63,8 @@ def fetch_programmes():
         
         if current_time:
             title, desc = clean_and_split(line)
-            if title and len(title) > 2 and "Designed" not in title:
+            # Φιλτράρισμα άκυρων γραμμών
+            if title and len(title) > 2 and "Designed" not in title and "Copyright" not in title:
                 programmes.append((current_time, title, desc))
                 current_time = None
     return programmes
@@ -77,7 +81,6 @@ def build_xml(programmes, target_days):
                 h, m = map(int, time_str.split(":"))
                 start_dt = base_date.replace(hour=h, minute=m, second=0, microsecond=0)
 
-                # Stop Time
                 if i < len(programmes) - 1:
                     nh, nm = map(int, programmes[i + 1][0].split(":"))
                     stop_dt = base_date.replace(hour=nh, minute=nm, second=0, microsecond=0)
@@ -89,7 +92,7 @@ def build_xml(programmes, target_days):
                     start_dt += timedelta(days=1)
                     stop_dt += timedelta(days=1)
 
-                # Ειδική περίπτωση Deal Πέμπτης
+                # Ειδικός κανόνας για το Deal Πέμπτης
                 if is_thursday and h == 19 and m == 0:
                     title_final, desc_final = "DEAL", "Με τον Γιώργο Θαναηλάκη"
                 else:
@@ -100,7 +103,9 @@ def build_xml(programmes, target_days):
 
                 xml += f'<programme channel="alpha.cy" start="{start_str}" stop="{stop_str}">\n'
                 xml += f"  <title>{title_final}</title>\n"
-                xml += f"  <desc>{desc_final}</desc>\n"
+                # Εμφάνιση περιγραφής μόνο αν δεν είναι κενή
+                if desc_final:
+                    xml += f"  <desc>{desc_final}</desc>\n"
                 xml += "</programme>\n"
             except:
                 continue
@@ -117,7 +122,7 @@ def main():
     progs = fetch_programmes()
     if progs:
         build_xml(progs, [today, tomorrow])
-        print("✅ Το EPG ενημερώθηκε με διαχωρισμό τίτλου/περιγραφής!")
+        print("✅ Το EPG ενημερώθηκε!")
 
 if __name__ == "__main__":
     main()
