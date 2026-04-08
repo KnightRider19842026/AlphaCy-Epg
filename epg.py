@@ -8,10 +8,10 @@ import os
 URL = "https://www.alphacyprus.com.cy/program"
 XML_FILE = "epg.xml"
 
-# ---------------- ΑΚΡΙΒΕΣ ΩΡΕΣ ΓΝΩΣΤΩΝ ΕΚΠΟΜΠΩΝ ----------------
-# Format: title -> duration in minutes
+# ---------------- ΑΚΡΙΒΕΣ ΔΙΑΡΚΕΙΕΣ / STOP TIMES ----------------
+# Όλες οι γνωστές εκπομπές με ακριβή διάρκεια (λεπτά)
 FIXED_TIMES = {
-    "ALPHA ΚΑΛΗΜΕΡΑ": 100,   # 06:45 - 09:25 (~100 λεπτά)
+    "ALPHA ΚΑΛΗΜΕΡΑ": 95,      # 06:45 - 09:20
     "ALPHA ΕΝΗΜΕΡΩΣΗ": 150,
     "DEAL": 60,
     "ALPHA NEWS": 60,
@@ -23,7 +23,7 @@ FIXED_TIMES = {
     "ΑΥΤΟΨΙΑ": 90,
 }
 
-# ---------------- CLEAN TITLE ----------------
+# ---------------- ΚΑΘΑΡΙΣΜΟΣ ΤΙΤΛΩΝ ----------------
 def clean_title(title):
     title = re.sub(r"\(.*?\)", "", title)
     title = re.sub(r"live now", "", title, flags=re.IGNORECASE)
@@ -37,12 +37,11 @@ def clean_title(title):
     )
     return re.sub(r"\s+", " ", title).strip()
 
-# ---------------- FETCH DAY ----------------
+# ---------------- ΑΝΑΚΤΗΣΗ ΠΡΟΓΡΑΜΜΑΤΟΣ ----------------
 def fetch_day_programmes(day_offset):
     resp = requests.get(URL, timeout=10)
     resp.raise_for_status()
     soup = BeautifulSoup(resp.text, "html.parser")
-
     lines = soup.get_text("\n").split("\n")
     programmes = []
 
@@ -63,7 +62,7 @@ def fetch_day_programmes(day_offset):
     target_date = datetime.now() + timedelta(days=day_offset)
     return programmes, target_date
 
-# ---------------- LOAD EXISTING ----------------
+# ---------------- ΦΟΡΤΩΣΗ ΥΠΑΡΧΟΝΤΟΣ XML ----------------
 def load_existing():
     if not os.path.exists(XML_FILE):
         return []
@@ -78,14 +77,13 @@ def load_existing():
         ))
     return data
 
-# ---------------- MERGE ----------------
+# ---------------- ΣΥΝΔΥΑΣΜΟΣ / MERGE ----------------
 def merge_programmes(days_programmes):
     existing = load_existing()
     new_entries = []
 
     for programmes, target_date in days_programmes:
         target_day = target_date.strftime("%Y%m%d")
-        # Remove old programmes of the same day
         existing = [x for x in existing if not x[0].startswith(target_day)]
         base_date = target_date.replace(hour=0, minute=0, second=0, microsecond=0)
 
@@ -93,6 +91,7 @@ def merge_programmes(days_programmes):
             h, m = map(int, time_str.split(":"))
             start_dt = base_date + timedelta(hours=h, minutes=m)
 
+            # Ακριβές stop αν υπάρχει στο FIXED_TIMES
             if title in FIXED_TIMES:
                 stop_dt = start_dt + timedelta(minutes=FIXED_TIMES[title])
             else:
@@ -108,10 +107,8 @@ def merge_programmes(days_programmes):
             stop = stop_dt.strftime("%Y%m%d%H%M%S +0300")
             new_entries.append((start, stop, title))
 
-    # Combine old + new
+    # Combine old + new, keep last 3 days
     all_data = existing + new_entries
-
-    # Keep last 3 days only
     valid_days = sorted({x[0][:8] for x in all_data})[-3:]
     filtered = [x for x in all_data if x[0][:8] in valid_days]
 
@@ -122,7 +119,7 @@ def merge_programmes(days_programmes):
     final = sorted(unique.values(), key=lambda x: x[0])
     return final
 
-# ---------------- SAVE ----------------
+# ---------------- ΑΠΟΘΗΚΕΥΣΗ XML ----------------
 def save_xml(programmes):
     root = ET.Element("tv")
     channel = ET.SubElement(root, "channel", id="alpha.cy")
@@ -140,7 +137,7 @@ def save_xml(programmes):
 # ---------------- MAIN ----------------
 def main():
     try:
-        # Φτιάχνουμε λίστα με 3 μέρες (σήμερα, αύριο, μεθεπόμενη)
+        # 3ήμερο πρόγραμμα (σήμερα, αύριο, μεθεπόμενη)
         days_programmes = []
         for offset in range(3):
             prog, date = fetch_day_programmes(offset)
