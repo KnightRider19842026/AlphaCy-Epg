@@ -3,69 +3,6 @@
 <channel id="alpha.cy">
   <display-name>Alpha Cyprus</display-name>
 </channel>
-<programme channel="alpha.cy" start="20260509060000 +0300" stop="20260509070000 +0300">
-  <title>MY GREECE</title>
-</programme>
-<programme channel="alpha.cy" start="20260509070000 +0300" stop="20260509080000 +0300">
-  <title>ΕΠΤΑ ΘΑΝΑΣΙΜΕΣ ΠΕΘΕΡΕΣ</title>
-</programme>
-<programme channel="alpha.cy" start="20260509080000 +0300" stop="20260509085000 +0300">
-  <title>ΟΙΚΟΓΕΝΕΙΑΚΕΣ ΙΣΤΟΡΙΕΣ</title>
-</programme>
-<programme channel="alpha.cy" start="20260509085000 +0300" stop="20260509094500 +0300">
-  <title>ΜΗΝ ΑΡΧΙΖΕΙΣ ΤΗ ΜΟΥΡΜΟΥΡΑ</title>
-</programme>
-<programme channel="alpha.cy" start="20260509094500 +0300" stop="20260509130000 +0300">
-  <title>ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ ΜΕ ΤΟΝ ΜΑΝΕΣΗ</title>
-</programme>
-<programme channel="alpha.cy" start="20260509130000 +0300" stop="20260509135000 +0300">
-  <title>ΤΡΟΜΕΡΟΙ ΓΟΝΕΙΣ</title>
-</programme>
-<programme channel="alpha.cy" start="20260509135000 +0300" stop="20260509164000 +0300">
-  <title>ΚΑΛΥΤΕΡΑ ΔΕ ΓΙΝΕΤΑΙ!</title>
-</programme>
-<programme channel="alpha.cy" start="20260509164000 +0300" stop="20260509173000 +0300">
-  <title>NO LEFTOVERS</title>
-</programme>
-<programme channel="alpha.cy" start="20260509173000 +0300" stop="20260509180500 +0300">
-  <title>ΕΧΩ ΠΑΙΔΙΑ</title>
-</programme>
-<programme channel="alpha.cy" start="20260509180500 +0300" stop="20260509181000 +0300">
-  <title>ALPHA NEWS</title>
-</programme>
-<programme channel="alpha.cy" start="20260509181000 +0300" stop="20260509190000 +0300">
-  <title>ΟΙΚΟΓΕΝΕΙΑΚΕΣ ΙΣΤΟΡΙΕΣ</title>
-</programme>
-<programme channel="alpha.cy" start="20260509190000 +0300" stop="20260509200000 +0300">
-  <title>ΤΟ ΣΟΪ ΣΟΥ</title>
-</programme>
-<programme channel="alpha.cy" start="20260509200000 +0300" stop="20260509210000 +0300">
-  <title>ALPHA NEWS</title>
-</programme>
-<programme channel="alpha.cy" start="20260509210000 +0300" stop="20260509230000 +0300">
-  <title>ΠΑΡΑΔΟΣΙΑΚΗ ΒΡΑΔΙΑ</title>
-</programme>
-<programme channel="alpha.cy" start="20260509230000 +0300" stop="20260510001500 +0300">
-  <title>ΤΕΤ-Α-ΤΕΤ ΣΤΟΝ ALPHA</title>
-</programme>
-<programme channel="alpha.cy" start="20260510001500 +0300" stop="20260510011500 +0300">
-  <title>THE CHASE GREECE</title>
-</programme>
-<programme channel="alpha.cy" start="20260510011500 +0300" stop="20260510021500 +0300">
-  <title>ΔΙΑΦΑΝΗ ΑΓΑΠΗ</title>
-</programme>
-<programme channel="alpha.cy" start="20260510021500 +0300" stop="20260510031500 +0300">
-  <title>ΣΥΜΠΕΘΕΡΟΙ ΑΠ’ ΤΑ ΤΙΡΑΝΑ</title>
-</programme>
-<programme channel="alpha.cy" start="20260510031500 +0300" stop="20260510040000 +0300">
-  <title>10Η ΕΝΤΟΛΗ</title>
-</programme>
-<programme channel="alpha.cy" start="20260510040000 +0300" stop="20260510044500 +0300">
-  <title>ΦΕΥΓΑ</title>
-</programme>
-<programme channel="alpha.cy" start="20260510044500 +0300" stop="20260510054500 +0300">
-  <title>ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ ΜΕ ΤΟΝ ΜΑΝΕΣΗ</title>
-</programme>
 <programme channel="alpha.cy" start="20260510060000 +0300" stop="20260510070000 +0300">
   <title>MY GREECE</title>
 </programme>
@@ -88,7 +25,7 @@
   <title>ΚΑΛΥΤΕΡΑ ΔΕ ΓΙΝΕΤΑΙ!</title>
 </programme>
 <programme channel="alpha.cy" start="20260510164000 +0300" stop="20260510173000 +0300">
-  <title>NO LEFTOVERS</title>
+  <title>ISLAND ESCAPERS</title>
 </programme>
 <programme channel="alpha.cy" start="20260510173000 +0300" stop="20260510180500 +0300">
   <title>ΕΧΩ ΠΑΙΔΙΑ</title>
@@ -105,14 +42,14 @@
 <programme channel="alpha.cy" start="20260510200000 +0300" stop="20260510210000 +0300">
   <title>ALPHA NEWS</title>
 </programme>
-<programme channel="alpha.cy" start="20260510210000 +0300" stop="20260510230000 +0300">
-  <title>ΠΑΡΑΔΟΣΙΑΚΗ ΒΡΑΔΙΑ</title>
+<programme channel="alpha.cy" start="20260510210000 +0300" stop="20260510220000 +0300">
+  <title>ΟΙ ΑΘΩΟΙ</title>
 </programme>
-<programme channel="alpha.cy" start="20260510230000 +0300" stop="20260511001500 +0300">
-  <title>ΤΕΤ-Α-ΤΕΤ ΣΤΟΝ ALPHA</title>
+<programme channel="alpha.cy" start="20260510220000 +0300" stop="20260510234500 +0300">
+  <title>SUNDAY NIGHT</title>
 </programme>
-<programme channel="alpha.cy" start="20260511001500 +0300" stop="20260511011500 +0300">
-  <title>THE CHASE GREECE</title>
+<programme channel="alpha.cy" start="20260510234500 +0300" stop="20260511011500 +0300">
+  <title>ΛΟΥΗΣ NIGHT SHOW</title>
 </programme>
 <programme channel="alpha.cy" start="20260511011500 +0300" stop="20260511021500 +0300">
   <title>ΔΙΑΦΑΝΗ ΑΓΑΠΗ</title>
@@ -127,6 +64,69 @@
   <title>ΦΕΥΓΑ</title>
 </programme>
 <programme channel="alpha.cy" start="20260511044500 +0300" stop="20260511054500 +0300">
+  <title>ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ ΜΕ ΤΟΝ ΜΑΝΕΣΗ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511060000 +0300" stop="20260511070000 +0300">
+  <title>MY GREECE</title>
+</programme>
+<programme channel="alpha.cy" start="20260511070000 +0300" stop="20260511080000 +0300">
+  <title>ΕΠΤΑ ΘΑΝΑΣΙΜΕΣ ΠΕΘΕΡΕΣ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511080000 +0300" stop="20260511085000 +0300">
+  <title>ΟΙΚΟΓΕΝΕΙΑΚΕΣ ΙΣΤΟΡΙΕΣ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511085000 +0300" stop="20260511094500 +0300">
+  <title>ΜΗΝ ΑΡΧΙΖΕΙΣ ΤΗ ΜΟΥΡΜΟΥΡΑ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511094500 +0300" stop="20260511130000 +0300">
+  <title>ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ ΜΕ ΤΟΝ ΜΑΝΕΣΗ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511130000 +0300" stop="20260511135000 +0300">
+  <title>ΤΡΟΜΕΡΟΙ ΓΟΝΕΙΣ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511135000 +0300" stop="20260511164000 +0300">
+  <title>ΚΑΛΥΤΕΡΑ ΔΕ ΓΙΝΕΤΑΙ!</title>
+</programme>
+<programme channel="alpha.cy" start="20260511164000 +0300" stop="20260511173000 +0300">
+  <title>ISLAND ESCAPERS</title>
+</programme>
+<programme channel="alpha.cy" start="20260511173000 +0300" stop="20260511180500 +0300">
+  <title>ΕΧΩ ΠΑΙΔΙΑ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511180500 +0300" stop="20260511181000 +0300">
+  <title>ALPHA NEWS</title>
+</programme>
+<programme channel="alpha.cy" start="20260511181000 +0300" stop="20260511190000 +0300">
+  <title>ΟΙΚΟΓΕΝΕΙΑΚΕΣ ΙΣΤΟΡΙΕΣ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511190000 +0300" stop="20260511200000 +0300">
+  <title>ΤΟ ΣΟΪ ΣΟΥ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511200000 +0300" stop="20260511210000 +0300">
+  <title>ALPHA NEWS</title>
+</programme>
+<programme channel="alpha.cy" start="20260511210000 +0300" stop="20260511220000 +0300">
+  <title>ΟΙ ΑΘΩΟΙ</title>
+</programme>
+<programme channel="alpha.cy" start="20260511220000 +0300" stop="20260511234500 +0300">
+  <title>SUNDAY NIGHT</title>
+</programme>
+<programme channel="alpha.cy" start="20260511234500 +0300" stop="20260512011500 +0300">
+  <title>ΛΟΥΗΣ NIGHT SHOW</title>
+</programme>
+<programme channel="alpha.cy" start="20260512011500 +0300" stop="20260512021500 +0300">
+  <title>ΔΙΑΦΑΝΗ ΑΓΑΠΗ</title>
+</programme>
+<programme channel="alpha.cy" start="20260512021500 +0300" stop="20260512031500 +0300">
+  <title>ΣΥΜΠΕΘΕΡΟΙ ΑΠ’ ΤΑ ΤΙΡΑΝΑ</title>
+</programme>
+<programme channel="alpha.cy" start="20260512031500 +0300" stop="20260512040000 +0300">
+  <title>10Η ΕΝΤΟΛΗ</title>
+</programme>
+<programme channel="alpha.cy" start="20260512040000 +0300" stop="20260512044500 +0300">
+  <title>ΦΕΥΓΑ</title>
+</programme>
+<programme channel="alpha.cy" start="20260512044500 +0300" stop="20260512054500 +0300">
   <title>ΣΑΒΒΑΤΟΚΥΡΙΑΚΟ ΜΕ ΤΟΝ ΜΑΝΕΣΗ</title>
 </programme>
 </tv>
